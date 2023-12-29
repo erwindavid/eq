@@ -12,10 +12,18 @@
 		{#each nav as item}
 			<div class="nav-btn" on:click={()=>setPage(item)}>
 				{#if item == pageSet}
-					<img src={"../src/assets/"+item+"-active.svg"} height="32px" width="32px">
+					<img 
+						src={"/src/assets/"+item+"-active.svg"} 
+						height="32px" 
+						width="32px" 
+						alt={item+" active icon"}>
 					<div class="nav-label active">{item}</div>
 				{:else}
-					<img src={"../src/assets/"+item+".svg"} height="32px" width="32px">
+					<img 
+						src={"/src/assets/"+item+".svg"} 
+						height="32px" 
+						width="32px" 
+						alt={item+" inactive icon"}>
 					<div class="nav-label">{item}</div>
 				{/if}
 			</div>

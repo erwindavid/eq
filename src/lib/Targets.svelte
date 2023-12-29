@@ -55,9 +55,10 @@
 				bind:this={checkAll}>
 			<label for="all"></label>
 			<img class="center-h-grid"
-				src="./src/assets/Frequency.svg" 
+				src="/src/assets/Frequency.svg" 
 				height="26px" 
-				width="26px">
+				width="26px"
+				alt="Frequency icon">
 		</div>
 		{#each items as item}
 			<div class="notify btm-line" 
@@ -112,7 +113,7 @@
 				{#if formUser[item["question-id"]]["notified"].length > 0}
 						<img class="center-h-grid"
 							on:click={()=>formUser[item["question-id"]]["frequency"]=getNextFrequency(formUser[item["question-id"]]["frequency"])}
-							src={"./src/assets/"+formUser[item["question-id"]]["frequency"]+".svg"}
+							src={"/src/assets/"+formUser[item["question-id"]]["frequency"]+".svg"}
 							height="24px" 
 							width="24px">
 				{/if}
@@ -126,41 +127,51 @@
 			</div>
 			<div class="no-target-demo flex-h">
 				<img 
-					src="./src/assets/Monitore.svg" 
+					src="/src/assets/Monitore.svg" 
 					height="24px" 
-					width="24px">
+					width="24px"
+					alt="Monitore icon">
 				<img class="rotate-90 opacity20" 
-					src="./src/assets/Arrow.svg" 
+					src="/src/assets/Arrow.svg" 
 					height="24px"
-					width="24px">
+					width="24px"
+					alt="Arrow icon">
 				<img 
-					src="./src/assets/Monitore-active.svg" 
+					src="/src/assets/Monitore-active.svg" 
 					height="24px" 
-					width="24px">
+					width="24px"
+					alt="Monitore-active icon">
 			</div>
 			<div class="italic">
 				{getText("notify-start2" ,lang)}
 			</div>
 			<div class="no-target-demo">
 				<img 
-					src="./src/assets/Dropdown.svg" 
+					src="/src/assets/Dropdown.svg" 
 					height="24px" 
-					width="24px">
+					width="24px"
+					alt="Dropdown icon">
 			</div>
 			<div class="italic">
 				{getText("notify-start3" ,lang)}
 			</div>
 			<div class="no-target-demo flex-h">
 				<img 
-					src="./src/assets/Notify.svg" 
+					src="/src/assets/Notify.svg" 
 					height="24px" 
-					width="24px">
-				<img class="rotate-90 opacity20" 
-					src="./src/assets/Arrow.svg" 
+					width="24px"
+					alt="Notify icon">
+				<img 
+					class="rotate-90 opacity20" 
+					src="/src/assets/Arrow.svg" 
 					height="24px"
-					width="24px">
-				<img src="./src/assets/Notify-active.svg" height="24px" 
-					width="24px">
+					width="24px"
+					alt="Arrow icon">
+				<img 
+					src="/src/assets/Notify-active.svg" 
+					height="24px" 
+					width="24px"
+					alt="Notify-active icon">
 			</div>
 		</div>
 	{/if}

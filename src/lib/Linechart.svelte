@@ -174,7 +174,7 @@
 			y={gety(48+7)}
 			width="20" 
 			height="20" 
-			href="./src/assets/EQ2.svg" 
+			href="/src/assets/EQ2.svg" 
 		/>
 	</svg>
 	<div class="btm-space">
