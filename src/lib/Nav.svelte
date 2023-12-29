@@ -13,14 +13,14 @@
 			<div class="nav-btn" on:click={()=>setPage(item)}>
 				{#if item == pageSet}
 					<img 
-						src={"../assets/"+item+"-active.svg"} 
+						src={"./src/assets/"+item+"-active.svg"} 
 						height="32px" 
 						width="32px" 
 						alt={item+" active icon"}>
 					<div class="nav-label active">{item}</div>
 				{:else}
 					<img 
-						src={"/eq/src/assets/"+item+".svg"} 
+						src={"./src/assets/"+item+".svg"} 
 						height="32px" 
 						width="32px" 
 						alt={item+" inactive icon"}>
