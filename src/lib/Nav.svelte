@@ -13,7 +13,7 @@
 			<div class="nav-btn" on:click={()=>setPage(item)}>
 				{#if item == pageSet}
 					<img 
-						src={"/eq/src/assets/"+item+"-active.svg"} 
+						src={"../assets/"+item+"-active.svg"} 
 						height="32px" 
 						width="32px" 
 						alt={item+" active icon"}>
