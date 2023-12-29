@@ -1,0 +1,32 @@
+/* - - - - - - - - - LOGO - - - - - - - - - */
+
+h1 {
+	font-weight: normal;
+}
+
+.logo {
+	width: fit-content;
+}
+
+.logo > p {
+	font-family: serif;
+	margin-left: 6px;
+}
+
+.logo .initials {
+	font-weight: bolder;
+	color:green;
+}
+
+.logo .accessory {
+	font-size: smaller; 
+	color:grey
+}
+
+.logo .principal {
+	font-size: larger; 
+}	
+
+.logo .linetwo {
+	line-height: 5px		
+}

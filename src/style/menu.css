@@ -1,0 +1,43 @@
+/* - - - - - - - - - MENU - - - - - - - - - */
+
+.menu {
+	height:100%; 
+	width: 200px; 
+	background-color: white; 
+	position: fixed; 
+	z-index: 10;
+	transition: all 0.5s ease-out;
+	left: 0px;
+	padding-left: 10px;
+}
+
+.menu-in {
+	left: 0px;
+}
+
+.menu-out {
+	left: -250px;
+}
+
+.menu li {
+	margin: 20px 0;
+}
+
+.mask {
+	height: 100vh; 
+	width: 100vw; 
+	background-color: black; 
+	position: fixed; 
+	z-index: 5;
+	opacity: 0.5;
+	transition: all 1s;
+}
+
+.mask-in {
+	opacity: 0.5;
+}
+
+.mask-out {
+	opacity: 0;
+	z-index: -1;
+}

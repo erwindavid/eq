@@ -1,0 +1,93 @@
+/* - - - - - - - - GENERAL - - - - - - - - */
+
+html, body {
+	height:100%;
+	font-family: sans-serif;
+}
+
+.center-h-grid {
+	justify-self: center;
+}
+
+
+.container {
+	display: grid;
+	grid-template-rows: 60px 65vh 70px;
+	color: #444;
+	font-family: sans-serif;
+	max-width: 800px;
+	height: 100%;
+	margin: auto;
+	background-color: white;
+}
+
+.wrapper {
+	display: flex;
+	flex-direction: column;
+	max-width: 800px;
+	margin: auto;
+	color: #444;
+	justify-content: center;
+}
+
+.header{
+	font-weight: bold;
+}
+
+.head {
+	padding: 10px 0;
+	height: 60px;
+	position: fixed;
+	max-width: 800px;
+	width: 95%;
+	top: 0px;
+	background-color: white;
+	z-index: 2;
+}
+
+.sandwich {
+}
+
+.italic {
+	font-style: italic;
+}
+
+.opacity20 {
+	opacity: 0.2;
+}
+
+.page {
+	margin-top: 70px;
+	margin-bottom: 50px;
+	overflow: scroll;
+}
+
+.flex-h {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.rotate-90 {
+	transform: rotate(-90deg);
+}
+
+.emoji {
+	font-size: x-large; 
+	margin-right: 5px;
+}
+
+.text-center {
+	text-align: center
+}
+
+.btm-line {
+	border-bottom: 2px solid lightgrey;
+}
+
+.btm-space {
+	margin-bottom: 40px
+}
+
+
+

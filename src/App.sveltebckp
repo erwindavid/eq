@@ -1,0 +1,1310 @@
+				<select bind:value={item.answer}>
+					{#each form.find(e=>e["id"]=item["section-id"])["items"].find(e=>e["id"]=items["question-id"])["items"] as option}
+						<option 
+							value={option["id"]}
+							selected={option["id"]==item["answer-id"]?"selected":""}>
+								{option[lang]}
+						</option>
+					{/each}
+				</select>
+
+
+<script>
+
+// MODULES
+
+import { answers } from "./stores/answers.js"
+import { monitored } from "./stores/monitored.js"
+import { timeseries } from "./stores/timeseries.js"
+
+import { form } from "./data/form.js"
+import { scoretexts } from "./data/scoretexts.js"
+
+import Nav from "./lib/Nav.svelte"
+import { currentHour } from "./lib/Dates.js"
+
+
+
+// VARIABLES
+
+let menu
+let mask
+let panneled = false
+let stap = ''
+let stag = ''
+let staw = 0.75*screenWidth()
+let stay = [0,25,50,75,100]
+let stah = 180
+let stal = 30
+let star = staw-stal
+let stab = []
+let stax = []
+let activePage = 'Score'
+
+const leng = form.reduce((acc,cur)=>{
+	cur.items.map(e=>{
+		acc[e.title.id] = e.items.length-1
+	})
+	return acc
+},{})
+
+const pos = form.reduce((acc,cur)=>{
+	cur.items.map(f=>{
+		f.items.map((g,i)=>{
+			acc[g.id] = i
+		})
+	})
+	return acc
+},{})
+
+$: score = Math.round(Object.entries($answers).reduce((acc,cur)=>{
+	acc += pos[cur[1]] / leng[cur[0]] * 100
+	return  acc  
+},0) / Object.keys($answers).length,0)
+
+$: monitems = form.reduce((acc,cur)=>{
+	cur.items.map(f=>{
+		if (Object.values($monitored).filter(e=>e.length>0).map(e=>e[0]).includes(f.title.id)) {
+			f.items.map(g=>{
+				if (g.id == $answers[f.title.id]) {
+					acc.push({"icon": cur.title.icon, "question": f.title[getLang()], "answer": g[getLang()]})
+				}
+			})
+		}
+	})
+	return acc
+},[])
+
+
+
+// FUNCTIONS
+
+function handleNote(){
+	$timeseries[currentHour()] = score
+}
+
+function toggleMenu() {
+	panneled = !panneled
+	if (panneled) {
+		menu.classList.add('menu-in')
+		menu.classList.remove('menu-out')
+		mask.classList.add('mask-in')
+		mask.classList.remove('mask-out')
+	} else {
+		menu.classList.add('menu-out')
+		menu.classList.remove('menu-in')
+		mask.classList.add('mask-out')
+		mask.classList.remove('mask-in')
+	}
+}
+
+function getx(par) {
+	return par*star+stal
+}
+
+function gety(par) {
+	return (1-par)*stah
+}
+
+function screenWidth() {
+	return window.innerWidth
+}
+
+function toggleSection(e){
+	if (e.target.children[1].innerText == 'ߜ') {
+		e.target.children[1].innerText = 'ߡ'
+		e.target.parentElement.children[1].style.display = "none"
+	}
+	else {
+		e.target.children[1].innerText = 'ߜ'
+		e.target.parentElement.children[1].style.display = "block"
+	}
+}
+
+function getLang() {
+	return "fr-FR"
+}
+
+function getMonthYear(par) {
+	const dt = new Date(par)
+	const options = { month: "long" };
+	const month = new Intl.DateTimeFormat(getLang(), options).format(dt);
+	const year = dt.getFullYear()
+	return month.charAt(0).toUpperCase() + month.slice(1) + " " + year
+}
+
+</script>
+
+<div bind:this={menu} class="menu menu-out">
+	<ul>
+		<li>About</li>
+		<li>Settings</li>
+		<li>Contribute</li>
+	</ul>
+</div>
+
+<div bind:this={mask} on:click={toggleMenu} class="mask mask-out"></div>
+
+<div class="container">
+
+<div class="flex-h">
+	<div class="flex-h logo">
+		<img src="./src/assets/EQ.svg" height="38px" width="38px">
+		<p><span class="accessory">Mon </span><span class="initials">Q</span>uotien <span class="principal linetwo"><span class="initials"><br>E</span>cologique</span></p>
+	</div>
+	<h1 class="sandwich" on:click={toggleMenu}>≡</h1>
+ </div>
+
+<div class="page">
+
+{#if activePage=="Score"}
+<div>
+	<div class="score">
+		<div class="kpi">
+			<div></div>
+			<div class="figure">{score}</div>
+			<div class="pct">%</div>
+		</div>
+		<div class="graphic">
+			<div class="bar" style={`left:${score}%`}></div>
+			<div class="background"></div>
+		</div>
+		{#each scoretexts.content as e}
+			{#if score >= e.range[0] && score < e.range[1] }
+				<h2 class="text-center">{e[getLang()]}</h2>
+			{/if}
+		{/each}
+	</div>
+	<h3><span class="emoji">🎯</span>Mes objectifs</h3>
+		{#each monitems as item}
+		<div class="flex-h notify">
+			<div>{item.icon}</div>
+			<div>{item.question}</div>
+			<div>{item.answer}</div>
+			<input 
+				type="checkbox"
+				id={item.question}/>
+			<label for={item.question}></label>
+		</div>
+	{/each}
+</div>
+
+{:else if activePage=="Progression"}
+<div class="staf">
+	<svg height="100%" width="100%" viewBox={"-5 -10 384 200"}>
+	<style>
+        text {
+            fill: black;
+        }
+        @media (prefers-color-scheme: dark) {
+            text { fill: white; }
+        }
+	</style>
+	<defs>
+        <linearGradient id="stag" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color: green; stop-opacity: 0.3" />
+          <stop offset="100%" style="stop-color: green; stop-opacity: 0" />
+        </linearGradient>
+    </defs>
+		<path class="stag" d={stag} stroke="none"/>
+		{#each stay as yy} 
+			<text x="0" y={(1-yy/100)*stah+5}>{yy}%</text>
+			<line x1={yy==100?42:yy==0?22:32} 
+				  y1={(1-yy/100)*stah} 
+				  x2={staw}
+				  y2={(1-yy/100)*stah} 
+				  stroke="grey" 
+				  stroke-width="1"
+				  stroke-dasharray={yy==0?0:4}/>
+		{/each}
+		{#each stab as bullet}
+			<circle cx={getx(bullet.x)} cy={gety(bullet.y)} r="4" fill="green" />
+		{/each}
+		{#each stax as xx}
+			<text x={staw/stax.length/2.5} y="220">{xx}</text>
+		{/each}
+		<path d={stap} stroke="green" fill="none" stroke-width='2'/>
+	</svg>
+</div>
+
+{:else}
+<div>
+	{#each form as section, id0}
+	<div>
+		<div class="flex-h question-title" on:click={toggleSection}>
+			<div class="flex-h">
+				<div class="emoji">{section.title.icon}</div>
+				<h3>{section.title[getLang()]}</h3>
+			</div>
+			<div>ߡ</div>
+		</div>
+		<ol style="display: none">
+		{#each section.items as question, id1}
+			<div>
+				<div class="flex-h monitore">
+					<h4><li>{question.title[getLang()]}</li></h4>
+				<input
+						type="checkbox"
+						id={question.title.id}
+						value={question.title.id}
+						bind:group={$monitored[question.title.id]}>
+					<label for={question.title.id}></label>
+				</div>
+				{#each question.items as answer}
+					<div>
+						<input
+							type="radio" 
+							value={answer.id} 
+							name={question.title.id}
+							bind:group={$answers[question.title.id]}
+							on:change={handleNote}>
+						<label>{answer[getLang()]}</label>
+					</div>
+				{/each}
+			</div>
+		{/each}
+		</ol>
+	</div>
+	{/each}
+</div>
+{/if}
+</div>
+
+<Nav bind:pageSet={activePage}/>
+
+</div>
+
+
+
+
+
+// src/stores/content.js
+import { writable } from 'svelte/store'
+
+// Get the value out of storage on load.
+const stored = localStorage.content
+// or localStorage.getItem('content')
+
+// Set the stored value or a sane default.
+export const content = writable(stored || 'Hello, World!')
+
+// Anytime the store changes, update the local storage value.
+content.subscribe((value) => localStorage.content = value)
+// or localStorage.setItem('content', value)
+
+<script>
+  import { content } from "./store"
+</script>
+
+<p>{$content}</p>
+
+<input bind:value={$content} />
+
+
+
+<script>
+
+// VARIABLES
+let score = 20
+let previouscore
+let timeseries = []
+let pannel
+let mask
+let panneled = false
+let stap = ''
+let stag = ''
+let staw = 0.75*screenWidth()
+let stay = [0,25,50,75,100]
+let stah = 180
+let stal = 30
+let star = staw-stal
+let stab = []
+let stax = []
+let activePage
+let tracking = 
+{
+	"content":[
+		{"label": "tracked",
+		 "viewBox": "",
+		 "path": ""
+		},
+		{"label": "untracked",
+		 "viewBox": "",
+		 "path": ""
+		}
+	]
+}
+let verb = 
+{
+	"content":[
+	  {"range": ["0","25"], "fr-FR": "Un bon debut... bonne nouvelle : il reste de nombreux axes d'amelioration"},
+	  {"range": ["25","50"], "fr-FR": "En bonne voie, les efforts sont a continuer"},
+	  {"range": ["50","75"], "fr-FR": "Formidable ! Un dernier petit effort ?"},
+	  {"range": ["75","100"], "fr-FR": "Examplaire"}
+	]
+}
+let menu = 
+{
+  "content": [
+	{"label": "Score",
+	 "viewBox": "0 0 340 340",
+	 "path": "M124.478,112.026c3.768,0.786,7.623,1.186,11.458,1.186c21.89,0,41.733-12.988,50.995-32.173l10.457,1.806 c0.75,0.129,1.497,0.192,2.234,0.192c6.229,0,11.739-4.479,12.835-10.824c1.226-7.098-3.534-13.845-10.632-15.07l-9.399-1.624 c-0.253-9.82-3.153-19.392-8.566-27.854c-7.958-12.437-20.36-20.963-34.927-24.003c-2.595-0.542-5.401-0.806-8.581-0.806 c-28.748,0-83.508,23.504-89.657,26.185c-3.848,1.676-6.652,5.1-7.537,9.201c-0.886,4.102,0.255,8.378,3.066,11.492 C54.761,59.189,98.647,106.628,124.478,112.026z M140.352,28.938c1.68,0,2.696,0.14,3.251,0.255	c7.645,1.596,14.138,6.046,18.284,12.528c1.826,2.854,3.102,5.956,3.813,9.185l-27.991-4.833 c-7.096-1.224-13.844,3.535-15.07,10.632c-1.226,7.098,3.535,13.845,10.633,15.07l25.939,4.479 c-5.674,6.683-14.142,10.876-23.274,10.876c-2.046,0-4.105-0.214-6.123-0.636c-9.45-1.975-31.623-20.669-51.335-40.613 C98.218,38.273,125.843,28.938,140.352,28.938z M186.243,192.565c7.203,0,13.042-5.839,13.042-13.042c0-7.202-5.839-13.041-13.042-13.041h-53.582l-6.738-20.218 c-0.119-0.354-0.186-0.648-0.222-0.879c0.229-0.038,0.529-0.067,0.9-0.067l87.794-0.001c5.855,0,16.041,4.965,22.704,11.063	c15.686,14.366,35.472,46.456,35.739,46.891c2.461,4.014,6.743,6.227,11.13,6.227c2.324,0,4.678-0.622,6.805-1.927 c6.141-3.765,8.065-11.795,4.3-17.935c-0.887-1.446-21.935-35.617-40.36-52.492c-9.738-8.915-25.982-17.91-40.317-17.91 l-87.794,0.001c-9.244,0-17.366,3.912-22.284,10.733c-4.918,6.821-6.063,15.766-3.14,24.54l3.772,11.317	c-7.059-1.377-15.38-4.765-19.936-8.41l-48.92-39.146c-11.33-9.063-20.784-6.086-24.323-4.385C8.231,115.586,0,121.109,0,135.619 v24.814c0,14.251,8.273,31.668,19.323,40.813l48.563,46.119c0.268,0.254,0.544,0.496,0.832,0.727 c10.535,8.429,28.65,14.786,42.139,14.786h103.539c7.925,0,21.155,3.998,27.756,8.386l31.114,20.696 c2.221,1.477,4.729,2.184,7.211,2.184c4.219,0,8.358-2.044,10.87-5.819c3.989-5.997,2.361-14.092-3.636-18.081l-31.117-20.698 c-10.932-7.268-29.073-12.75-42.198-12.75H110.856c-7.434,0-19.395-4.143-25.46-8.77l-48.47-46.031 c-0.267-0.253-0.544-0.496-0.831-0.725c-5.148-4.119-10.014-14.245-10.014-20.835v-16.77l42.636,34.117	c10.534,8.428,28.648,14.784,42.139,14.784H186.243z" },
+	{"label": "Questions",
+	 "viewBox": "0 0 26 26",
+	 "path": "M17 2v2h3.007c.548 0 .993.445.993.993v16.014c0 .548-.445.993-.993.993H3.993C3.445 22 3 21.555 3 21.007V4.993C3 4.445 3.445 4 3.993 4H7V2h10zM7 6H5v14h14V6h-2v2H7V6zm2 10v2H7v-2h2zm0-3v2H7v-2h2zm0-3v2H7v-2h2zm6-6H9v2h6V4z"},
+    { "label":"Progression", 
+	  "viewBox": "0 0 248.311 248.311",
+	  "path": "M218.008,42.807c-16.709,0-30.303,13.594-30.303,30.302c0,5.825,1.656,11.269,4.516,15.893l-29.12,33.418 c-3.986-1.932-8.455-3.017-13.173-3.017c-6.165,0-11.902,1.855-16.692,5.029l-15.887-13.543c1.431-3.518,2.227-7.359,2.227-11.384 c0-16.708-13.594-30.302-30.303-30.302S58.971,82.796,58.971,99.504c0,6.314,1.944,12.182,5.261,17.042l-23.367,30.256 c-3.291-1.228-6.849-1.902-10.562-1.902C13.594,144.899,0,158.493,0,175.202c0,16.708,13.594,30.302,30.303,30.302 s30.303-13.594,30.303-30.302c0-6.465-2.042-12.459-5.505-17.385l23.221-30.068c3.399,1.323,7.091,2.057,10.952,2.057 c6.147,0,11.87-1.845,16.652-5.003l15.91,13.563c-1.42,3.505-2.209,7.33-2.209,11.338c0,16.709,13.594,30.303,30.303,30.303 c16.708,0,30.302-13.594,30.302-30.303c0-5.446-1.452-10.557-3.978-14.978l29.537-33.896c3.74,1.655,7.872,2.582,12.218,2.582 c16.709,0,30.303-13.594,30.303-30.303C248.311,56.4,234.717,42.807,218.008,42.807z M218.008,85.411 c-6.784,0-12.303-5.519-12.303-12.303c0-6.783,5.519-12.302,12.303-12.302s12.303,5.519,12.303,12.302 C230.311,79.893,224.792,85.411,218.008,85.411z M149.929,162.007c-6.784,0-12.303-5.519-12.303-12.303 c0-6.783,5.519-12.302,12.303-12.302c6.783,0,12.302,5.519,12.302,12.302C162.23,156.488,156.712,162.007,149.929,162.007z M89.273,111.807c-6.784,0-12.303-5.519-12.303-12.303c0-6.783,5.519-12.302,12.303-12.302s12.303,5.519,12.303,12.302 C101.576,106.288,96.058,111.807,89.273,111.807z M42.605,175.202c0,6.783-5.519,12.302-12.303,12.302S18,181.985,18,175.202 c0-6.784,5.519-12.303,12.303-12.303S42.605,168.418,42.605,175.202z"}
+	]
+}
+let questionnaire =
+{
+  "content": [
+    {
+      "title": {
+		"id": 1,
+        "fr-FR": "Alimentation",
+        "en-US": "Food",
+		"icon" : "🍔"
+      },
+      "items": [
+        {
+          "title": {
+			"id": 2,
+            "fr-FR": "Je mange de la viande"
+          },
+          "items": [
+            {
+			  "id": 3,
+              "fr-FR": "Principalement",
+            },
+            {
+			  "id": 4,
+              "fr-FR": "Rarement",
+            },
+            {
+			  "id": 5,
+              "fr-FR": "Jamais",
+            }
+          ]
+        },
+        {
+          "title": {
+			"id": 6,
+            "fr-FR": "Je mange biologique"
+          },
+          "items": [
+            {
+			  "id": 7,
+              "fr-FR": "Jamais"
+            },
+            {
+			  "id": 8,
+              "fr-FR": "Parfois"
+            },
+            {
+			  "id": 9,
+              "fr-FR": "Principalement"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": {
+	    "id": 10,
+        "fr-FR": "Deplacements",
+        "en-US": "Travel",
+		"icon": "✈️"
+      },
+      "items": [
+        {
+		  "id": 11,
+          "title": {
+			"id": 12,
+            "fr-FR": "Je prends l'avion"
+          },
+          "items": [
+            {
+			  "id": 13,
+              "fr-FR": "Principalement"
+            },
+            {
+			  "id": 14,
+              "fr-FR": "Rarement"
+            },
+            {
+			   "id": 15,
+              "fr-FR": "Jamais"
+            }
+          ]
+        },
+        {
+          "title": {
+			"id": 16,
+            "fr-FR": "Je possede une voiture"
+          },
+          "items": [
+            {
+			  "id": 17,
+              "fr-FR": "Oui, thermique"
+            },
+            {
+			  "id": 18,
+              "fr-FR": "Oui, electirque"
+            },
+            {
+			  "id": 19,
+              "fr-FR": "Non"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": {
+		"id": 20,
+        "fr-FR": "Hygiene",
+        "en-US": "Hygien",
+		"icon": "🚿"
+      },
+	   "items": []
+	},
+	{
+      "title": {
+		"id": 21,
+        "fr-FR": "Consommation",
+        "en-US": "Consumption",
+		"icon": "🛍️"
+      },
+	   "items": []
+	},
+	{
+      "title": {
+		"id": 22,
+        "fr-FR": "Recyclage",
+        "en-US": "Recycling",
+		"icon": "♻️"
+      },
+	   "items": []
+	},
+	{
+      "title": {
+		"id": 23,
+        "fr-FR": "Finance",
+        "en-US": "Finance",
+		"icon": "🪙"
+      },
+	   "items": []
+	}
+  ]
+}
+
+// INIT
+
+updateScore()
+updateTimeseries()
+setPage('Score')
+
+
+// FUNCTIONS
+
+function togglePannel() {
+	panneled = !panneled
+	if (panneled) {
+		pannel.classList.add('in')
+		pannel.classList.remove('out')
+		mask.classList.add('fadein')
+		mask.classList.remove('exit')
+	} else {
+		pannel.classList.add('out')
+		pannel.classList.remove('in')
+		mask.classList.add('exit')
+		mask.classList.remove('fadein')
+	}
+}
+
+function setPage(par){
+	activePage = par
+}
+
+function updateTimeseries() {
+	Object.entries(getData())
+	.filter(a=>a[0].includes('T-'))
+	.sort((a,b)=>a[0]>=b[0])
+	.map((e,i)=>{
+		let key = parseInt(e[0].split('-')[1])
+		let value = parseInt(e[1])/100
+		timeseries.push({dt: new Date(key).toLocaleString(), ts: key, y: value})});
+	timeseries.map((e,i)=>{
+		let j = i==timeseries.length-1?i:i+1 // < 0 ? 0 : i - 1
+		let curr=timeseries[i]['ts']
+		let first = timeseries[0]['ts']
+		let last = timeseries[(timeseries.length-1)]['ts']
+		timeseries[i].x = (curr-first) / (last-first)
+		timeseries[i].delta = timeseries[j].ts-timeseries[i].ts 
+		timeseries[i].islast = curr == last
+	})
+	timeseries.filter(e=>e['delta']>1000000 || e['islast']==true)
+	.map((e,i)=>{
+		let op
+		if (i==0){
+			op = 'M '
+		} else {
+			op= ' L'
+		}
+		stap += op+getx(e.x)+' '+gety(e.y)
+	});
+	stag = stap + ' L'+getx(1)+" "+gety(0)+" L"+getx(0)+" "+gety(0)+"z"
+	stab = timeseries.filter(e=>e['delta']>1000000 || e['islast']==true);
+	timeseries.map(e=>{
+		const mt = getMonthYear(e['ts']) 
+		if (!stax.includes(mt)){
+			stax.push(mt)
+		}
+	})
+}
+
+console.log(Object.entries(getData()).filter(e=>e[0].includes('M-')))
+
+console.log(questionnaire.content)
+
+function getx(par) {
+	return par*star+stal
+}
+
+function gety(par) {
+	return (1-par)*stah
+}
+
+function screenWidth() {
+	return window.innerWidth
+}
+
+function getData() {
+	return  {...window.localStorage}	
+}
+
+function updateScore() {
+	let scoreboard = Object.entries(getData()).filter((a)=>a[0].includes('A-'))
+	let currentscore = score
+	let newscore = Math.round(scoreboard.map((e)=>eval(e[1])*100).reduce((acc,curr)=>acc+curr,0)/(scoreboard.length==0?1:scoreboard.length),0)
+/*	for (let i=0;i<=Math.abs(newscore-currentscore);i++){
+		setTimeout(()=> {
+			if(newscore>currentscore){
+				score = currentscore+i
+			}else{
+				score=currentscore-i
+			}
+		}, Math.pow(i,1.9))
+	}*/
+	previouscore = score
+	score = newscore
+}
+
+function now() {
+	const date = new Date()
+	return Date.parse(date)
+}
+
+function toStore(k,v) {
+	console.log('toStore',k,v)
+	window.localStorage.setItem(k, v)
+}
+
+function toggleSection(e){
+	if (e.target.children[1].innerText == 'ߜ') {
+		e.target.children[1].innerText = 'ߡ'
+		e.target.parentElement.children[1].style.display = "none"
+	}
+	else {
+		e.target.children[1].innerText = 'ߜ'
+		e.target.parentElement.children[1].style.display = "block"
+	}
+}
+
+function getCheckbox(id0, id1, id2) {
+	let key = 'A-'.concat(id0.toString()).concat(id1.toString())
+	let val = getData()[key]
+	let num = parseInt(val&&val.split('/')[0])
+	return id2 == num
+}
+
+
+function note(event) {
+	let key = event.currentTarget.getAttribute('id0').concat(event.currentTarget.getAttribute('id1'))
+	let answerId = (parseInt(event.currentTarget.getAttribute('id2'))).toString()
+	let answersMax = (event.currentTarget.parentElement.childNodes.length-1).toString()
+	toStore('A-'.concat(key), answerId.concat('/').concat(answersMax))
+	updateScore()
+	toStore('T-'.concat(now()), score)
+	updateTimeseries()
+}
+
+function getMonitoring(id0, id1) {
+	let key = 'M-'.concat(id0.toString()).concat(id1.toString())
+	return getData()[key]=='true'?true:false
+}
+
+
+function monitore(event) {
+	let key = "M-".concat(event.currentTarget.getAttribute('id0')).concat(event.currentTarget.getAttribute('id1'))
+	let val = getData()[key]=='true'?false:true
+	getMonitoring(event.currentTarget.getAttribute('id0'), event.currentTarget.getAttribute('id1'))
+	toStore(key, val)
+}
+
+function getLang() {
+	return "fr-FR"
+}
+
+function getMonthYear(par) {
+	const dt = new Date(par)
+	const options = { month: "long" };
+	const month = new Intl.DateTimeFormat(getLang(), options).format(dt);
+	const year = dt.getFullYear()
+	return month.charAt(0).toUpperCase() + month.slice(1) + " " + year
+}
+
+</script>
+
+<div bind:this={pannel} class="pannel out">
+	<ul>
+		<li>About</li>
+		<li>Settings</li>
+		<li>Contribute</li>
+	</ul>
+</div>
+
+<div bind:this={mask} on:click={togglePannel} class="mask exit"></div>
+
+<div class="gen">
+
+<header class="header">
+	<div style="display: flex; align-items:center">
+<svg fill=green height="38px" width="40px" viewBox="0 0 400 500" xml:space="preserve">
+<path d="M121.160553,47.165539 
+	C148.211929,25.909807 178.484085,13.581357 212.240677,8.828187 
+	C286.348053,-1.606666 361.215820,40.168964 396.448853,98.946022 
+	C408.005585,118.225449 414.590942,139.131348 417.002502,161.423508 
+	C418.058899,171.188324 418.980682,180.978653 420.457886,190.682159 
+	C421.147614,195.212616 422.708435,199.683548 424.393921,203.977554 
+	C435.735291,232.870758 447.220612,261.707458 458.649933,290.566193 
+	C463.778900,303.516754 457.225464,313.313538 443.257782,313.491272 
+	C435.970886,313.584015 428.681793,313.507629 421.000183,313.507629 
+	C421.000183,330.854828 421.039062,347.823059 420.989380,364.790985 
+	C420.938934,382.025757 415.766327,397.535889 404.763733,410.879547 
+	C390.151123,428.601379 371.308746,437.749756 348.274323,437.983490 
+	C338.778046,438.079865 329.279999,437.999451 319.313354,437.999451 
+	C319.313354,456.661407 319.313354,475.231598 319.313354,494.153137 
+	C253.307098,494.153137 187.769485,494.153137 121.786880,494.153137 
+	C121.786880,492.269135 121.786880,490.472321 121.786880,488.675537 
+	C121.786880,440.015289 121.749062,391.354950 121.865929,342.694977 
+	C121.874359,339.184326 120.799873,336.971405 118.113708,334.724548 
+	C78.816162,301.853790 56.408958,259.897644 51.940952,208.841995 
+	C46.681190,148.739014 66.953354,98.107475 110.233665,56.445763 
+	C113.584908,53.219852 117.318398,50.391052 121.160553,47.165539 
+M212.500000,197.998001 
+	C194.669342,197.998001 176.837418,197.897827 159.009537,198.119949 
+	C156.681946,198.148972 153.797897,199.242020 152.150360,200.846970 
+	C139.618301,213.055130 127.324951,225.508469 114.974533,237.902664 
+	C113.981094,238.899597 113.116776,240.025192 111.864464,241.469177 
+	C139.332809,250.387863 166.352783,251.150131 193.427582,243.018005 
+	C220.430450,234.907471 242.337936,218.916992 262.337616,197.998001 
+	C245.155441,197.998001 229.327728,197.998001 212.500000,197.998001 
+M146.105209,159.500031 
+	C146.105209,134.080612 146.105209,108.661201 146.105209,82.168480 
+	C120.646767,105.781525 103.032463,132.813812 97.468643,166.361710 
+	C93.802353,188.468185 94.711403,210.591293 103.020424,232.567947 
+	C110.998627,224.545578 118.395584,217.108017 125.792145,209.670074 
+	C132.485672,202.939087 141.821396,197.287903 145.137360,189.176071 
+	C148.531525,180.872986 146.027496,170.158813 146.105209,159.500031 
+M252.500076,138.155716 
+	C241.169800,138.155716 229.836212,138.014053 218.512131,138.278839 
+	C216.325882,138.329956 213.653091,139.436539 212.092422,140.963501 
+	C198.039749,154.712631 184.180374,168.659439 170.284683,182.568634 
+	C169.456024,183.398102 168.802536,184.402542 167.654724,185.843948 
+	C202.306244,185.843948 236.104797,185.876038 269.902618,185.734146 
+	C271.350983,185.728073 273.352997,184.464371 274.146515,183.193130 
+	C279.325806,174.895569 284.606964,166.623962 289.120911,157.961487 
+	C292.291748,151.876556 294.300812,145.186234 297.069061,138.155716 
+	C281.787964,138.155716 267.644012,138.155716 252.500076,138.155716 
+M206.021927,127.844772 
+	C206.021927,101.258461 206.021927,74.672150 206.021927,47.664955 
+	C189.578003,52.120953 175.303345,59.655766 161.912689,69.102776 
+	C159.330368,70.924583 158.308502,72.835678 158.320999,76.058975 
+	C158.444351,107.876076 158.381485,139.693878 158.384216,171.511490 
+	C158.384338,172.934952 158.507629,174.358429 158.640366,177.225037 
+	C175.014893,160.448425 190.508575,144.574295 206.021927,127.844772 
+M280.675262,72.174942 
+	C263.031769,89.860558 245.388260,107.546173 227.266708,125.710983 
+	C252.055664,125.710983 275.796906,125.710983 299.841095,125.710983 
+	C302.361633,103.019562 302.373688,80.871674 293.877502,58.481892 
+	C289.250885,63.287422 285.213165,67.481285 280.675262,72.174942 
+M263.004578,72.504601 
+	C270.401733,65.252464 277.798920,58.000324 285.713226,50.241180 
+	C263.007233,41.817230 240.897415,41.513695 218.577866,44.554985 
+	C218.577866,68.883369 218.577866,92.525696 218.577866,116.736679 
+	C233.531616,101.849182 248.018097,87.426888 263.004578,72.504601 
+M365.167938,229.552094 
+	C366.393402,230.050888 367.597961,230.610580 368.847656,231.038696 
+	C377.888000,234.135696 387.558807,230.728516 392.749023,222.644730 
+	C397.884460,214.646225 396.889832,204.241547 390.262054,197.435104 
+	C384.079742,191.086060 376.594696,189.367981 368.371063,192.270691 
+	C361.162415,194.815155 356.292725,200.060669 355.108093,207.728439 
+	C353.727478,216.664764 356.701630,224.067047 365.167938,229.552094z"/>
+		</svg>
+		<p style="font-family: serif; margin-left: 6px"><span style="font-size: smaller; color:grey">Mon </span><span class="eq">Q</span>uotien <span style="font-size: larger; line-height: 5px"><span class="eq"><br>E</span>cologique</span></p>
+	</div>
+	<h1 class="sandwich" on:click={togglePannel}>≡</h1>
+ </header>
+
+<div class="main">
+{#if activePage=="Score"}
+<div class="synthesis">
+	<div class="kpigroup">
+		<div></div>
+		<div class="kpi">{score}</div>
+		<div class="pct">%</div>
+	</div>
+	<div class="cont">
+		<div class="bar" style={`left:${score}%`}></div>
+		<div class="grad"></div>
+	</div>
+	{#each verb.content as e}
+		{#if score >= e.range[0] && score < e.range[1] }
+			<h2 style="text-align: center">{e[getLang()]}</h2>
+		{/if}
+	{/each}
+	<h3><span style="font-size: x-large">🎯</span> Mes objectifs</h3>
+</div>
+{:else if activePage=="Progression"}
+<div class="staf">
+	<svg height="100%" width="100%" viewBox={"-5 -10 384 200"}>
+	<style>
+        text {
+            fill: black;
+        }
+        @media (prefers-color-scheme: dark) {
+            text { fill: white; }
+        }
+	</style>
+	<defs>
+        <linearGradient id="stag" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color: green; stop-opacity: 0.3" />
+          <stop offset="100%" style="stop-color: green; stop-opacity: 0" />
+        </linearGradient>
+    </defs>
+		<path class="stag" d={stag} stroke="none"/>
+		{#each stay as yy} 
+			<text x="0" y={(1-yy/100)*stah+5}>{yy}%</text>
+			<line x1={yy==100?42:yy==0?22:32} 
+				  y1={(1-yy/100)*stah} 
+				  x2={staw}
+				  y2={(1-yy/100)*stah} 
+				  stroke="grey" 
+				  stroke-width="1"
+				  stroke-dasharray={yy==0?0:4}/>
+		{/each}
+		{#each stab as bullet}
+			<circle cx={getx(bullet.x)} cy={gety(bullet.y)} r="4" fill="green" />
+		{/each}
+		{#each stax as xx}
+			<text x={staw/stax.length/2.5} y="220">{xx}</text>
+		{/each}
+		<path d={stap} stroke="green" fill="none" stroke-width='2'/>
+	</svg>
+</div>
+{:else}
+<div>
+	{#each questionnaire.content as section, id0}
+	<div class="section">
+		<div class="sectionttl" on:click={toggleSection}>
+			<div style="display: flex;align-items:center; gap:5px">
+				<div style="font-size: x-large">{section.title.icon}</div>
+				<h3>{section.title[getLang()]}</h3>
+			</div>
+			<div>ߡ</div>
+		</div>
+		<ol style="display: none">
+		{#each section.items as item, id1}
+			<div>
+				<div style="display: flex; justify-content: space-between; align-items: center">
+					<h4><li>{item.title[getLang()]}</li></h4>
+					<input id={'M'+item.title[getLang()]} type="checkbox" class="cb" name={'M'+item.title[getLang()]} id0={id0} id1={id1} on:change={monitore} style="margin-right: 10%" checked={getMonitoring(id0,id1)} />
+					<label for={'M'+item.title[getLang()]}></label>
+				</div>
+			{#each item.items as answer, id2}
+				<div>
+					<input on:change={note} type="radio" name={item.title[getLang()]} id0={id0} id1={id1} id2={id2} checked={getCheckbox(id0,id1,id2)}>
+					<label>{answer[getLang()]}</label>
+				</div>
+			{/each}
+			</div>
+		{/each}
+		</ol>
+	</div>
+	{/each}
+</div>
+{/if}
+</div>
+
+<div class="nav">
+	{#each menu.content as item}
+		<div class="navitem" on:click={()=>setPage(item.label)}>
+			<svg fill=green height="32px" width="32px" viewBox={item.viewBox}>
+				<path d={item.path}/>
+			</svg>
+			<div class="navtext">{item.label}</div>
+		</div>
+	{/each}
+</div>
+</div>
+
+
+<style>
+	input[type=checkbox] {
+		display: none;
+	}
+
+	input[type=checkbox] + label {
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28px' height='28px' viewBox='0 -5 26 26' fill='none' %3E%3Cpath d='M9.75 12C9.75 10.7574 10.7574 9.75 12 9.75C13.2426 9.75 14.25 10.7574 14.25 12C14.25 13.2426 13.2426 14.25 12 14.25C10.7574 14.25 9.75 13.2426 9.75 12Z' fill='green'/%3E %3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M2 12C2 13.6394 2.42496 14.1915 3.27489 15.2957C4.97196 17.5004 7.81811 20 12 20C16.1819 20 19.028 17.5004 20.7251 15.2957C21.575 14.1915 22 13.6394 22 12C22 10.3606 21.575 9.80853 20.7251 8.70433C19.028 6.49956 16.1819 4 12 4C7.81811 4 4.97196 6.49956 3.27489 8.70433C2.42496 9.80853 2 10.3606 2 12ZM12 8.25C9.92893 8.25 8.25 9.92893 8.25 12C8.25 14.0711 9.92893 15.75 12 15.75C14.0711 15.75 15.75 14.0711 15.75 12C15.75 9.92893 14.0711 8.25 12 8.25Z' fill='green'/%3E %3C/svg%3E");
+		height:30px;
+		width: 30px;
+		border: none;
+	}
+	input[type=checkbox]:checked + label {
+		background-image: url( "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28px' height='28px' viewBox='0 -5 26 26' fill='none' %3E%3Cpath d='M3.27489 15.2957C2.42496 14.1915 2 13.6394 2 12C2 10.3606 2.42496 9.80853 3.27489 8.70433C4.97196 6.49956 7.81811 4 12 4C16.1819 4 19.028 6.49956 20.7251 8.70433C21.575 9.80853 22 10.3606 22 12C22 13.6394 21.575 14.1915 20.7251 15.2957C19.028 17.5004 16.1819 20 12 20C7.81811 20 4.97196 17.5004 3.27489 15.2957Z' stroke='green' stroke-width='1.5'/%3E%3Cpath d='M15 12C15 13.6569 13.6569 15 12 15C10.3431 15 9 13.6569 9 12C9 10.3431 10.3431 9 12 9C13.6569 9 15 10.3431 15 12Z' stroke='green' stroke-width='1.5'/%3E%3C/svg%3E");
+	height:30px;
+	width: 30px;
+	border: none;
+	}
+
+	.pannel {
+		height:80vh; 
+		width: 200px; 
+		background-color: white; 
+		position: fixed; 
+		z-index: 10;
+		transition: all 0.5s ease-out;
+		left: 0px;
+	}
+	
+	.in {
+		left: 0px;
+	}
+
+	.out {
+		left: -250px;
+	}
+
+	.mask {
+		height: 100vh; 
+		width: 100vw; 
+		background-color: black; 
+		position: fixed; 
+		z-index: 5;
+		opacity: 0.5;
+		transition: all 1s;
+	}
+
+	.fadein {
+		opacity: 0.5;
+	}
+
+	.exit {
+		opacity: 0;
+		z-index: -1;
+	}
+
+	.stag {
+		fill: url(#stag)
+	}
+
+	.gen {
+		display:grid;
+		grid-template-rows: 60px 60vh 70px;
+		color: #444;
+		font-family: sans-serif;
+		max-width: 800px;
+		height: 100%;
+		margin: auto;
+		background-color: white;
+	}
+
+	.main{
+		overflow: scroll;
+	}
+
+	.nav {
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
+		align-items: center;
+	}
+
+	.navitem {
+		text-align: center;
+	}
+
+	.navtext {
+		font-size: 0.7em; 
+		color:green; 
+	}
+
+	.staf{
+		background-color: whitesmoke;
+		height: 300px;
+		width: 80%;
+		margin: auto
+	}
+
+	.synthesis {
+		display: block;
+		margin: auto;
+		width: 75%;
+	}
+	
+	.kpigroup{
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+		align-items: center;
+	}
+	
+	.pct{
+		font-size: 35px;
+		text-align:left;
+	}
+
+	.kpi {
+		font-size: 60px;
+	}
+	
+	.cont {
+		position: relative;
+		height: 40px;
+	}
+	
+	.grad {
+		position: absolute;
+		top:0px;
+		left:0px;
+		height:100%;
+		width: 100%;
+		background-image: linear-gradient(to right, red , yellow, green);
+	}
+	
+	.bar {
+		z-index: 3;
+		position: absolute;
+		top: 0px;
+		height: 100%;
+		width: 5px;
+		background-color: grey;
+	}
+
+	header, .sectionttl {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+	
+	.sectionttl {
+		padding: 0 10px;
+		background-color: whitesmoke;
+		position: sticky;
+		border-top: 2px solid white;
+	}
+	
+	.sectionttl > * {
+		pointer-events: none
+	}
+	
+	h1 {
+		font-weight: normal;
+	}
+
+	.eq {
+		font-weight: bolder;
+		color:green;
+	}
+
+	
+</style>
+
+
+2023-11-22
+
+<script>
+
+// MODULES
+
+import { answers } from "./stores/answers.js"
+import { monitored } from "./stores/monitored.js"
+import { timeseries } from "./stores/timeseries.js"
+import { notifs } from "./stores/notifs.js"
+
+import { form } from "./data/form.js"
+import { scoretexts } from "./data/scoretexts.js"
+
+import Nav from "./lib/Nav.svelte"
+import Logo from "./lib/Logo.svelte"
+import { currentHour } from "./lib/Dates.js"
+
+
+
+// VARIABLES
+
+let menu
+let mask
+let panneled = false
+let stap = ''
+let stag = ''
+let staw = 0.75*screenWidth()
+let stay = [0,25,50,75,100]
+let stah = 180
+let stal = 30
+let star = staw-stal
+let stab = []
+let stax = []
+let activePage = 'Score'
+
+const leng = form.reduce((acc,cur)=>{
+	cur.items.map(e=>{
+		acc[e.title.id] = e.items.length-1
+	})
+	return acc
+},{})
+
+const pos = form.reduce((acc,cur)=>{
+	cur.items.map(f=>{
+		f.items.map((g,i)=>{
+			acc[g.id] = i
+		})
+	})
+	return acc
+},{})
+
+$: score = Math.round(Object.entries($answers).reduce((acc,cur)=>{
+	acc += pos[cur[1]] / leng[cur[0]] * 100
+	return  acc  
+},0) / Object.keys($answers).length,0)
+
+$: monitems = form.reduce((acc,cur)=>{
+	cur.items.map(f=>{
+		if (Object.values($monitored).filter(e=>e.length>0).map(e=>e[0]).includes(f.title.id)) {
+			f.items.map(g=>{
+				if (g.id == $answers[f.title.id]) {
+					acc.push({"id": f.title.id, "icon": cur.title.icon, "question": f.title[getLang()], "answer": g[getLang()]})
+				}
+			})
+		}
+	})
+	return acc
+},[])
+
+
+
+// FUNCTIONS
+
+function handleNote(){
+	$timeseries[currentHour()] = score
+}
+
+function toggleMenu() {
+	panneled = !panneled
+	if (panneled) {
+		menu.classList.add('menu-in')
+		menu.classList.remove('menu-out')
+		mask.classList.add('mask-in')
+		mask.classList.remove('mask-out')
+	} else {
+		menu.classList.add('menu-out')
+		menu.classList.remove('menu-in')
+		mask.classList.add('mask-out')
+		mask.classList.remove('mask-in')
+	}
+}
+
+function getx(par) {
+	return par*star+stal
+}
+
+function gety(par) {
+	return (1-par)*stah
+}
+
+function screenWidth() {
+	return window.innerWidth
+}
+
+function toggleSection(e){
+	if (e.target.children[1].innerText == 'ߜ') {
+		e.target.children[1].innerText = 'ߡ'
+		e.target.parentElement.children[1].style.display = "none"
+	}
+	else {
+		e.target.children[1].innerText = 'ߜ'
+		e.target.parentElement.children[1].style.display = "block"
+	}
+}
+
+function getLang() {
+	return "fr-FR"
+}
+
+function getMonthYear(par) {
+	const dt = new Date(par)
+	const options = { month: "long" };
+	const month = new Intl.DateTimeFormat(getLang(), options).format(dt);
+	const year = dt.getFullYear()
+	return month.charAt(0).toUpperCase() + month.slice(1) + " " + year
+}
+
+</script>
+
+<div bind:this={menu} class="menu menu-out">
+	<Logo />
+	<ul>
+		<li>About</li>
+		<li>Settings</li>
+		<li>Contribute</li>
+	</ul>
+</div>
+
+<div bind:this={mask} on:click={toggleMenu} class="mask mask-out"></div>
+
+<div class="container">
+
+<div class="flex-h">
+	<Logo bind:pageSet={activePage}/>
+	<h1 class="sandwich" on:click={toggleMenu}>≡</h1>
+ </div>
+
+<div class="page">
+
+{#if activePage=="Score"}
+<div>
+	<div class="score">
+		<div class="kpi">
+			<div>Mon score :</div>
+			<div class="figure">{score}</div>
+			<div class="pct">%</div>
+		</div>
+		<div class="graphic">
+			<div class="bar" style={`left:${score}%`}></div>
+			<div class="background"></div>
+		</div>
+		{#each scoretexts.content as e}
+			{#if score >= e.range[0] && score < e.range[1] }
+				<h2 class="text-center">{e[getLang()]}</h2>
+			{/if}
+		{/each}
+	</div>
+	<h3><span class="emoji">🎯</span>Mes objectifs</h3>
+	<div class="notify btm-line header">
+		<div></div>
+		<div>Question</div>
+		<div>Reponse</div>
+		<input id="all" type="checkbox">
+		<label for="all"></label>
+	</div>
+	{#each monitems as item}
+		<div class="notify btm-line">
+			<div>{item.icon}</div>
+			<div>{item.question}</div>
+			<div>{item.answer}</div>
+			<input 
+				type="checkbox"
+				id={item.question}
+				value={item.id}
+				bind:group={$notifs[item.id]}>
+			<label for={item.question}></label>
+		</div>
+	{/each}
+	
+</div>
+
+{:else if activePage=="Progression"}
+<div class="staf">
+	<svg height="100%" width="100%" viewBox={"-5 -10 384 200"}>
+	<style>
+        text {
+            fill: black;
+        }
+        @media (prefers-color-scheme: dark) {
+            text { fill: white; }
+        }
+	</style>
+	<defs>
+        <linearGradient id="stag" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color: green; stop-opacity: 0.3" />
+          <stop offset="100%" style="stop-color: green; stop-opacity: 0" />
+        </linearGradient>
+    </defs>
+		<path class="stag" d={stag} stroke="none"/>
+		{#each stay as yy} 
+			<text x="0" y={(1-yy/100)*stah+5}>{yy}%</text>
+			<line x1={yy==100?42:yy==0?22:32} 
+				  y1={(1-yy/100)*stah} 
+				  x2={staw}
+				  y2={(1-yy/100)*stah} 
+				  stroke="grey" 
+				  stroke-width="1"
+				  stroke-dasharray={yy==0?0:4}/>
+		{/each}
+		{#each stab as bullet}
+			<circle cx={getx(bullet.x)} cy={gety(bullet.y)} r="4" fill="green" />
+		{/each}
+		{#each stax as xx}
+			<text x={staw/stax.length/2.5} y="220">{xx}</text>
+		{/each}
+		<path d={stap} stroke="green" fill="none" stroke-width='2'/>
+	</svg>
+</div>
+
+{:else}
+<div>
+	{#each form as section, id0}
+	<div>
+		<div class="flex-h question-title" on:click={toggleSection}>
+			<div class="flex-h">
+				<div class="emoji">{section.title.icon}</div>
+				<h3>{section.title[getLang()]}</h3>
+			</div>
+			<div>ߡ</div>
+		</div>
+		<ol style="display: none">
+		{#each section.items as question, id1}
+			<div>
+				<div class="flex-h monitore">
+					<h4><li>{question.title[getLang()]}</li></h4>
+					<input
+						type="checkbox"
+						id={question.title.id}
+						value={question.title.id}
+						bind:group={$monitored[question.title.id]}>
+					<label for={question.title.id}></label>
+				</div>
+				{#each question.items as answer}
+					<div>
+						<input
+							type="radio" 
+							value={answer.id} 
+							name={question.title.id}
+							bind:group={$answers[question.title.id]}
+							on:change={handleNote}>
+						<label>{answer[getLang()]}</label>
+					</div>
+				{/each}
+			</div>
+		{/each}
+		</ol>
+	</div>
+	{/each}
+</div>
+{/if}
+</div>
+
+<Nav bind:pageSet={activePage}/>
+
+</div>
