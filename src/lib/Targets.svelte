@@ -55,7 +55,7 @@
 				bind:this={checkAll}>
 			<label for="all"></label>
 			<img class="center-h-grid"
-				src="/src/assets/Frequency.svg" 
+				src="/eq/src/assets/Frequency.svg" 
 				height="26px" 
 				width="26px"
 				alt="Frequency icon">
@@ -113,9 +113,10 @@
 				{#if formUser[item["question-id"]]["notified"].length > 0}
 						<img class="center-h-grid"
 							on:click={()=>formUser[item["question-id"]]["frequency"]=getNextFrequency(formUser[item["question-id"]]["frequency"])}
-							src={"/src/assets/"+formUser[item["question-id"]]["frequency"]+".svg"}
+							src={"/eq/src/assets/"+formUser[item["question-id"]]["frequency"]+".svg"}
 							height="24px" 
-							width="24px">
+							width="24px"
+							alt="Frequency icon">
 				{/if}
 			</div>
 		{/each}
@@ -127,17 +128,18 @@
 			</div>
 			<div class="no-target-demo flex-h">
 				<img 
-					src="/src/assets/Monitore.svg" 
+					src="/eq/src/assets/Monitore.svg" 
 					height="24px" 
 					width="24px"
 					alt="Monitore icon">
-				<img class="rotate-90 opacity20" 
-					src="/src/assets/Arrow.svg" 
+				<img 
+					class="rotate-90 opacity20" 
+					src="/eq/src/assets/Arrow.svg" 
 					height="24px"
 					width="24px"
 					alt="Arrow icon">
 				<img 
-					src="/src/assets/Monitore-active.svg" 
+					src="/eq/src/assets/Monitore-active.svg" 
 					height="24px" 
 					width="24px"
 					alt="Monitore-active icon">
@@ -147,7 +149,7 @@
 			</div>
 			<div class="no-target-demo">
 				<img 
-					src="/src/assets/Dropdown.svg" 
+					src="/eq/src/assets/Dropdown.svg" 
 					height="24px" 
 					width="24px"
 					alt="Dropdown icon">
@@ -157,18 +159,18 @@
 			</div>
 			<div class="no-target-demo flex-h">
 				<img 
-					src="/src/assets/Notify.svg" 
+					src="/eq/src/assets/Notify.svg" 
 					height="24px" 
 					width="24px"
 					alt="Notify icon">
 				<img 
 					class="rotate-90 opacity20" 
-					src="/src/assets/Arrow.svg" 
+					src="/eq/src/assets/Arrow.svg" 
 					height="24px"
 					width="24px"
 					alt="Arrow icon">
 				<img 
-					src="/src/assets/Notify-active.svg" 
+					src="/eq/src/assets/Notify-active.svg" 
 					height="24px" 
 					width="24px"
 					alt="Notify-active icon">

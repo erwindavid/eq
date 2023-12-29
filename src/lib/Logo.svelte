@@ -9,7 +9,7 @@
 {#if lang=="fr-FR"}
 	<div class="flex-h logo" on:click={()=>setPage('Score')}>
 		<img 
-			src="/src/assets/EQ.svg" 
+			src="/eq/src/assets/EQ.svg" 
 			height="38px" 
 			width="38px"
 			alt="EQ logo">
@@ -21,7 +21,7 @@
 {:else}
 	<div class="flex-h logo" on:click={()=>setPage('Score')}>
 		<img 
-			src="/src/assets/EQ.svg" 
+			src="/eq/src/assets/EQ.svg" 
 			height="38px" 
 			width="38px"
 			alt="EQ logo">

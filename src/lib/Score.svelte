@@ -134,7 +134,7 @@
 					transform='translate(-10 0)'
 					width="20" 
 					height="20" 
-					href="/src/assets/EQ2.svg" 
+					href="/eq/src/assets/EQ2.svg" 
 				/>
 			{/if}
 		{/each}
