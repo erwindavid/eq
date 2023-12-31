@@ -55,7 +55,7 @@
 				bind:this={checkAll}>
 			<label for="all"></label>
 			<img class="center-h-grid"
-				src="/eq/src/assets/Frequency.svg" 
+				src="./src/assets/Frequency.svg" 
 				height="26px" 
 				width="26px"
 				alt="Frequency icon">
@@ -128,18 +128,18 @@
 			</div>
 			<div class="no-target-demo flex-h">
 				<img 
-					src="/eq/src/assets/Monitore.svg" 
+					src="./src/assets/Monitore.svg" 
 					height="24px" 
 					width="24px"
 					alt="Monitore icon">
 				<img 
 					class="rotate-90 opacity20" 
-					src="/eq/src/assets/Arrow.svg" 
+					src="./src/assets/Arrow.svg" 
 					height="24px"
 					width="24px"
 					alt="Arrow icon">
 				<img 
-					src="/eq/src/assets/Monitore-active.svg" 
+					src="./src/assets/Monitore-active.svg" 
 					height="24px" 
 					width="24px"
 					alt="Monitore-active icon">
@@ -149,7 +149,7 @@
 			</div>
 			<div class="no-target-demo">
 				<img 
-					src="/eq/src/assets/Dropdown.svg" 
+					src="./src/assets/Dropdown.svg" 
 					height="24px" 
 					width="24px"
 					alt="Dropdown icon">
@@ -159,18 +159,18 @@
 			</div>
 			<div class="no-target-demo flex-h">
 				<img 
-					src="/eq/src/assets/Notify.svg" 
+					src="./src/assets/Notify.svg" 
 					height="24px" 
 					width="24px"
 					alt="Notify icon">
 				<img 
 					class="rotate-90 opacity20" 
-					src="/eq/src/assets/Arrow.svg" 
+					src="./src/assets/Arrow.svg" 
 					height="24px"
 					width="24px"
 					alt="Arrow icon">
 				<img 
-					src="/eq/src/assets/Notify-active.svg" 
+					src="./src/assets/Notify-active.svg" 
 					height="24px" 
 					width="24px"
 					alt="Notify-active icon">

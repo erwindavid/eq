@@ -7,7 +7,7 @@
 	<h2 style="font-weight: normal">{message}</h2>
 	<img 
 		class="opacity20" 
-		src="/eq/src/assets/Arrow.svg" 
+		src="./src/assets/Arrow.svg" 
 		height="70px" 
 		width="70px" 
 		alt="Arrow icon">
